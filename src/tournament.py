@@ -85,7 +85,8 @@ class TournamentEngine:
 
 
 if __name__ == "__main__":
-    # 단위 테스트 및 시뮬레이션
+    # 1. 기본 8강 해피 패스 시뮬레이션
+    print("=== [1] 기본 8강 토너먼트 시뮬레이션 ===")
     mock_foods = [
         {"id": i, "name": f"음식_{i}", "category": "한식", "desc": "설명"}
         for i in range(1, 9)
@@ -100,4 +101,55 @@ if __name__ == "__main__":
         engine.advance_winner(match[0])
 
     champ = engine.get_final_champion()
-    print(f"\n최종 우승 음식: {champ['name']}!")
+    print(f"최종 우승 음식: {champ['name']}!\n")
+
+    # 2. 코드 리뷰 반영 엣지 케이스 테스트 (Reviewed by Deviskido in PR #1)
+    print("=== [2] 코드 리뷰 피드백 반영 엣지 케이스 검증 (Deviskido 제안) ===")
+
+    # [엣지 케이스 1]: 빈 리스트 및 7개(비 2의 거듭제곱) 입력 시 ValueError 검증
+    try:
+        TournamentEngine([])
+        assert False, "빈 리스트 입력 시 ValueError가 발생해야 합니다."
+    except ValueError:
+        print("[PASS] 빈 리스트 초기화 시 ValueError 정상 발생")
+
+    try:
+        TournamentEngine([{"id": i, "name": f"음식_{i}"} for i in range(7)])
+        assert False, "7개 아이템 입력 시 ValueError가 발생해야 합니다."
+    except ValueError:
+        print("[PASS] 7개(비 2의 거듭제곱) 초기화 시 ValueError 정상 발생")
+
+    # [엣지 케이스 2]: 대진에 없는 무효 승자 전달 시 ValueError 및 상태 불변성 검증
+    engine_edge = TournamentEngine(mock_foods)
+    initial_match_idx = engine_edge.current_match_index
+    initial_next_round_len = len(engine_edge.next_round_foods)
+    invalid_winner = {"id": 999, "name": "대진에_없는_음식"}
+
+    try:
+        engine_edge.advance_winner(invalid_winner)
+        assert False, "대진 매치에 없는 승자 전달 시 ValueError가 발생해야 합니다."
+    except ValueError:
+        assert engine_edge.current_match_index == initial_match_idx, "예외 발생 시 매치 인덱스가 유지되어야 합니다."
+        assert len(engine_edge.next_round_foods) == initial_next_round_len, "예외 발생 시 진출자 목록이 변경되지 않아야 합니다."
+        print("[PASS] 무효 승자 전달 시 ValueError 발생 및 상태 불변(State Unchanged) 확인")
+
+    # [엣지 케이스 3]: 16강(15경기) 및 32강(31경기) 히스토리 레코드 수 검증
+    # 16강 (8 + 4 + 2 + 1 = 15경기)
+    foods_16 = [{"id": i, "name": f"음식_{i}"} for i in range(1, 17)]
+    engine_16 = TournamentEngine(foods_16)
+    while not engine_16.is_tournament_finished():
+        m = engine_16.get_current_match()
+        engine_16.advance_winner(m[0])
+    assert len(engine_16.history) == 15, f"16강 경기 수는 15여야 합니다. 현재: {len(engine_16.history)}"
+    print(f"[PASS] 16강 총 경기 기록 수 = {len(engine_16.history)}경기 (기대값: 15)")
+
+    # 32강 (16 + 8 + 4 + 2 + 1 = 31경기)
+    foods_32 = [{"id": i, "name": f"음식_{i}"} for i in range(1, 33)]
+    engine_32 = TournamentEngine(foods_32)
+    while not engine_32.is_tournament_finished():
+        m = engine_32.get_current_match()
+        engine_32.advance_winner(m[0])
+    assert len(engine_32.history) == 31, f"32강 경기 수는 31여야 합니다. 현재: {len(engine_32.history)}"
+    print(f"[PASS] 32강 총 경기 기록 수 = {len(engine_32.history)}경기 (기대값: 31)")
+
+    print("\n[ALL PASS] 모든 코드 리뷰 피드백 검증 완료! (100% Pass)")
