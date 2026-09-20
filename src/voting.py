@@ -10,10 +10,16 @@ N명의 플레이어가 순서대로 1표씩 행사하고, 그 결과로 승자�
 
 from typing import Dict, List, Optional, Tuple
 
-try:  # 저장소 루트에서 패키지로 임포트할 때
-    from src.lottery import draw_lots_with_log
-except ImportError:  # `python src/voting.py` 로 직접 실행할 때
-    from lottery import draw_lots_with_log
+try:
+    from src.tie_breaker import draw_lots_with_log
+except ImportError:
+    try:
+        from tie_breaker import draw_lots_with_log
+    except ImportError:
+        try:
+            from src.lottery import draw_lots_with_log
+        except ImportError:
+            from lottery import draw_lots_with_log
 
 
 # 승자가 결정된 방식
