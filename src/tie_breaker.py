@@ -3,7 +3,7 @@ Lottery Module (동점 제비뽑기 추첨기)
 Authored by: 김진우 (Voting & QA Lead)
 Part of Codyssey b2-02 Korean Food Tournament.
 """
-
+# 테스트를 위한 설명
 import random
 from typing import Dict, List, Optional, Sequence, Tuple
 
