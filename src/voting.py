@@ -64,8 +64,11 @@ class VotingSession:
             raise ValueError(
                 f"지금은 '{self.current_player}'의 차례입니다. '{player}'는 투표할 수 없습니다."
             )
-        if choice_index not in (0, 1):
-            raise ValueError(f"선택 번호는 0 또는 1이어야 합니다. 입력값: {choice_index}")
+        if isinstance(choice_index, bool) or choice_index not in (0, 1):
+            raise ValueError(
+                f"선택 번호는 0('{self.match[0]['name']}') 또는 1('{self.match[1]['name']}')이어야 합니다. "
+                f"입력값: {choice_index!r}"
+            )
 
         self.votes[player] = choice_index
         self.turn_index += 1
@@ -165,8 +168,20 @@ if __name__ == "__main__":
     try:
         guard_session.cast_vote("진우", 5)
         assert False, "범위 밖 선택 번호는 ValueError여야 합니다."
-    except ValueError:
-        print("[PASS] 잘못된 선택 번호(5) 입력 시 ValueError 정상 발생")
+    except ValueError as e:
+        assert "김치찌개" in str(e) and "된장찌개" in str(e), "에러 메시지에 선택지가 안내되어야 합니다."
+        print(f"[PASS] 잘못된 선택 번호(5) 입력 시 ValueError 정상 발생")
+        print(f"       -> {e}")
+
+    for bad in (True, False):
+        try:
+            guard_session.cast_vote("진우", bad)
+            assert False, f"불리언 {bad}는 선택 번호로 허용되면 안 됩니다."
+        except ValueError:
+            pass
+    print("[PASS] 불리언(True/False) 입력 시 ValueError 정상 발생")
+    assert guard_session.votes == {}, "거부된 투표는 기록되지 않아야 합니다."
+    print("[PASS] 거부된 투표가 집계에 기록되지 않음")
 
     try:
         guard_session.resolve_winner()
