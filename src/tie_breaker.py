@@ -71,3 +71,5 @@ if __name__ == "__main__":
     print("[PASS] 추첨 로그에 당첨자 1명만 표기됨")
 
     print("\n[ALL PASS] lottery 모듈 전체 검증 완료!")
+
+# Experimental logger feature for revert testing
