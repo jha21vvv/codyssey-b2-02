@@ -121,30 +121,68 @@ git push origin main
 - 작성 및 실습: **김진우**
 
 ### 상황
-- `src/utils/date_utils.py` 기능을 개발하던 중, 긴급하게 `main` 브랜치에 올라온 다른 팀원의 PR 머지 결과를 확인하고 테스트해야 하는 요청이 들어옴.
-- 아직 작성 중이던 코드가 미완성이라 커밋할 수 없으며, 그렇다고 변경사항을 버릴 수도 없는 상황.
+- `feature/kim-tie-breaker-rename` 브랜치에서 `src/voting.py`에 기권(abstain) 처리 기능을 작성하던 중, 팀원의 PR이 `main`에 머지되었다는 연락을 받고 그 결과를 급히 확인해야 하는 상황이 발생함.
+- 작성 중이던 코드는 미완성이었음. 실제로 기권표(`ABSTAIN = -1`)가 `tally()`에서 `self.match[-1]`, 즉 **마지막 음식의 표로 조용히 잘못 집계**되는 버그가 남아 있어 커밋할 수 없는 상태였음.
+
+```python
+# 커밋할 수 없었던 미완성 코드
+# FIXME: ABSTAIN(-1) 표가 tally()에서 match[-1](마지막 음식) 표로 잘못 집계됨
+if choice_index not in (0, 1, ABSTAIN):
+```
+
+- 그렇다고 변경사항을 버릴 수도 없어, 작업물을 안전하게 보관한 뒤 브랜치를 전환해야 했음.
 
 ### 시도한 명령/절차
 ```bash
-# 1. 미완성 작업물을 임시 저장소(Stash Stack)에 저장
-git stash save "WIP: date utils format enhancement"
+# 1. 미완성 작업물을 임시 저장소(Stash Stack)에 보관
+$ git stash save "WIP: voting abstain handling"
+Saved working directory and index state On feature/kim-tie-breaker-rename: WIP: voting abstain handling
 
-# 2. 작업 트리가 깨끗해진 상태 확인 후 브랜치 전환
-git status  # "working tree clean"
-git checkout main
-# (긴급 확인 및 테스트 수행)
+# 2. 작업 트리가 깨끗해진 것과 스택에 쌓인 것을 확인
+$ git status
+On branch feature/kim-tie-breaker-rename
+nothing to commit, working tree clean
 
-# 3. 원래 작업 브랜치로 복귀
-git checkout feature/kim-date-utils
+$ git stash list
+stash@{0}: On feature/kim-tie-breaker-rename: WIP: voting abstain handling
 
-# 4. 보관해 둔 작업물 복원 및 스택에서 제거
-git stash pop
-git status  # 보관했던 파일들이 온전히 복원됨 확인
+# 3. main 으로 전환하여 긴급 확인 수행
+$ git checkout main
+Switched to branch 'main'
+
+$ grep -c "ABSTAIN" src/voting.py   # WIP 내용이 섞여있지 않음을 확인
+0
+
+$ git log --oneline -1               # 팀원 머지 결과 점검
+9461a9b Merge pull request #11 from jha21vvv/feature/kang-amend-practice
+
+# 4. 원래 작업 브랜치로 복귀 후 작업물 복원
+$ git checkout feature/kim-tie-breaker-rename
+Switched to branch 'feature/kim-tie-breaker-rename'
+
+$ git stash pop
+Changes not staged for commit:
+        modified:   src/voting.py
+Dropped refs/stash@{0} (0148889306cab7a8efba40be400180d7b25ac81a)
+
+# 5. 복원 및 스택 비워짐 확인
+$ git status --short
+ M src/voting.py
+
+$ git stash list
+(비어 있음)
 ```
 
 ### 결과
-- 미완성 코드를 더미 커밋으로 남기지 않고도 작업 트리를 깨끗하게 비워 안전하게 브랜치를 오갈 수 있었으며, 복귀 후 `git stash pop`으로 작업을 끊김 없이 재개함.
-- 주의할 점: 추적되지 않은 새 파일(Untracked file)은 `git stash -u` 옵션을 주어야 함께 보관됨.
+- 미완성 코드를 `temp`, `wip` 같은 더미 커밋으로 남기지 않고도 작업 트리를 깨끗하게 비워 안전하게 브랜치를 오갈 수 있었음.
+- 복귀 후 `git stash pop` 한 번으로 작업이 끊김 없이 그대로 복원되었고, 스택에서도 정상적으로 제거됨(`Dropped refs/stash@{0}`).
+- 본 실습의 기권 처리 초안은 집계 버그가 남은 검증용 미완성 코드였으므로, 복원 확인 후 `git checkout -- src/voting.py`로 폐기함. 기권/재투표 기능은 별도 이슈로 분리 예정.
+
+### 실습 중 직접 겪은 함정 (Pitfall)
+- stash 하지 않은 채로 `git checkout main`을 실행했더니, **커밋하지 않은 변경사항이 그대로 `main`까지 따라왔음**. Git은 충돌이 없으면 작업 트리의 변경을 브랜치 전환 시 그대로 들고 가기 때문임.
+- 이 상태를 모르고 작업하면 A 브랜치의 미완성 코드를 B 브랜치에 실수로 커밋하게 됨. `git status`로 확인 후 `git checkout -- <파일>`로 정리했으며, **애초에 stash로 비우고 전환해야 하는 이유**를 몸으로 확인함.
+- 추적되지 않는 새 파일(Untracked file)은 `git stash`에 포함되지 않으므로 `git stash -u` 옵션이 필요함.
 
 ### 왜 이 방법을 선택했는가 (Why)
-- Git 히스토리에 의미 없는 "temp", "wip" 커밋을 남기는 것을 원천 방지하고, 컨텍스트 스위칭을 가장 빠르고 깔끔하게 수행할 수 있는 전문 도구이기 때문임.
+- Git 히스토리에 의미 없는 `temp`, `wip` 커밋을 남기는 것을 원천 차단하면서, 컨텍스트 스위칭을 가장 빠르고 깔끔하게 수행할 수 있는 전용 도구이기 때문임.
+- `git commit` 후 `git reset`으로 되돌리는 우회 방법도 있으나, 미완성 코드가 히스토리에 잠시라도 올라가고 되돌리는 절차가 더 번거로워 stash가 이 상황에 가장 적합함.
