@@ -55,7 +55,9 @@ e940da0 HEAD@{1}: commit: docs: Ad amend practice log
 
 ### 참여자
 - 작성 및 실습: **안재현**
-- **실전 증빙 캡처**: `prove/01_an_trouble_shoting.png`
+
+### 실전 증빙 캡처
+![시나리오 2 실습 증빙: git reset --soft 실행 및 Staged 보존 확인](../prove/01_an_trouble_shoting.png)
 
 ### 상황
 - 기능 개발 브랜치(`test/reset-practice`)에서 커밋을 완료했으나, 실수로 미완성된 임시 디버그 파일(`temp_debug.txt`)이 커밋에 포함되어 버렸음을 인지함.
@@ -95,6 +97,9 @@ git status
 ### 참여자
 - 작성 및 실습: **안재현, 김진우**
 - 실습 브랜치: `feature/ahn-modify-lottery`
+
+### 실전 증빙 캡처
+![시나리오 3 실습 증빙: git revert 실행 및 취소 로그 확인](../prove/03_ahn_kim_revert.png)
 
 ### 상황
 - 원격 저장소(`origin/feature/ahn-modify-lottery`)에 이미 push 완료된 기능 커밋(`7124020` - 임시 로거 추가)에 문제가 발생하여 이를 롤백해야 하는 상황 발생.

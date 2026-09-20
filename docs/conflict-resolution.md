@@ -12,7 +12,9 @@
 ### 참여자
 - 작성자: **안재현**
 - 상대: **강동하**
-- **실전 증빙 캡처**: `prove/02_ahn_gang_crush_test.png`
+
+### 실전 증빙 캡처
+![충돌 1 실습 증빙: food_data.json 머지 충돌 캡처](../prove/02_ahn_gang_crush_test.png)
 
 ### 상황 (What happened)
 - **대상 파일**: `data/food_data.json` (한국 음식 128선 데이터셋)
@@ -57,6 +59,9 @@
 ### 참여자
 - 작성자: **안재현**
 - 상대: **김진우**
+
+### 실전 증빙 캡처
+![충돌 2 실습 증빙: lottery.py -> tie_breaker.py 리네임 충돌 해결 캡처](../prove/04_ahn_kim_rename_conflict.png)
 
 ### 상황 (What happened)
 - **대상 파일**: `src/lottery.py` ➔ `src/tie_breaker.py`
