@@ -1,4 +1,4 @@
-# Conflict Resolution Log
+﻿# Conflict Resolution Log
 
 > **과제 요구사항**: 의도적으로 충돌 상황을 만들고 해결한 기록을 남긴다.  
 > - 팀 전체 기준: 최소 2회 이상 충돌 해결 기록 (비자명 충돌 최소 1회 포함)  
@@ -15,37 +15,39 @@
 
 ### 상황 (What happened)
 - **대상 파일**: `data/food_data.json` (한국 음식 128선 데이터셋)
-- **발생 브랜치**: `feature/ahn-tournament-engine` 와 `feature/kang-food-loader` 머지 과정
-- **상황 설명**: 안재현은 `data/food_data.json` 10번 라인에 "순두부찌개" 데이터를 추가하였고, 강동하는 동일 라인에 "부대찌개" 데이터를 추가하여 머지 시 동일 hunk 인접 라인 충돌 발생.
+- **발생 브랜치**: `feature/ahn-dish` 와 `origin/main` 머지 과정
+- **상황 설명**:
+  - 실전 충돌 및 오류 발생 재현 테스트를 위해 강동하 님이 10번 부대찌개 설명(`desc`) 필드에 `"1_"` 접두사를 추가하여 커밋함.
+  - 안재현은 데이터 파일 형식(포맷팅) 전환 및 순두부찌개 데이터를 추가한 상태에서 `git pull origin main`을 수행하여 동일 라인(hunk) 충돌을 의도적으로 유발함.
 
 ### 충돌 내용 (Conflict markers)
 ```txt
 <<<<<<< HEAD
-    {"id": 3, "name": "순두부찌개", "category": "찌개/탕류", "desc": "부드러운 순두부와 얼큰한 해물 국물"},
+    {"id": 10, "name": "부대찌개", "category": "찌개/탕류", "desc": "1_햄과 소시지, 라면 사리가 가득한 푸짐함"},
 =======
-    {"id": 4, "name": "부대찌개", "category": "찌개/탕류", "desc": "햄과 소시지, 라면 사리가 가득한 푸짐함"},
+    {"id": 10, "name": "부대찌개", "category": "찌개/탕류", "desc": "햄과 소시지, 라면 사리가 가득한 푸짐함"},
 >>>>>>> feature/kang-food-loader
 ```
 
 ### 해결 과정 (How)
-- **선택한 해결 전략**: `Keep both` (양쪽 데이터 모두 유지)
-  - 두 음식 모두 메뉴 월드컵에 유용한 항목이므로 두 음식을 모두 살려(Keep both) 배열에 순차 등록함.
+- **선택한 해결 전략**: `Clean Data Selection & Keep Both` (오탈자 정제 및 양쪽 데이터 보존)
+  - 테스트용으로 삽입된 `"1_"` 오탈자 접두사를 제거하고 원래의 올바른 부대찌개 설명을 유지하며, 안재현 브랜치의 추가 음식 데이터(순두부찌개)도 유실 없이 모두 보존함.
 - **수행 절차**:
   1. `data/food_data.json` 파일을 에디터로 열어 충돌 마커 확인
-  2. 충돌 마커(`<<<<<<< HEAD`, `=======`, `>>>>>>>`)를 제거하고 두 음식을 순서대로 나열하여 id 번호 정리
+  2. 충돌 마커(`<<<<<<< HEAD`, `=======`, `>>>>>>>`)를 제거하고, 오탈자 정제 및 두 음식 데이터가 모두 온전히 등록되도록 정리
   3. `git add data/food_data.json`
   4. `git commit -m "fix: Resolve merge conflict in food_data.json by keeping both dishes"`
-  5. `git push origin feature/ahn-tournament-engine`
+  5. `git push origin feature/ahn-dish`
 
 ### 결과 (Outcome)
 - 양쪽 브랜치의 음식 데이터가 유실 없이 병합되어 128선 DB가 정상 동작함.
-- 관련 PR: [PR #7: feat: Add Sundubu-jjigae to food data](https://github.com/jha21vvv/codyssey-b2-02/pull/7)
-- 충돌 해결 커밋: fafaa6d (fix: Resolve merge conflict in food_data.json by keeping both dishes)
-- main 머지 커밋: a72615f (Merge pull request #7 from jha21vvv/feature/ahn-dish)
+- **관련 PR**: [PR #7: feat: Add Sundubu-jjigae to food data](https://github.com/jha21vvv/codyssey-b2-02/pull/7)
+- **충돌 해결 커밋**: `fafaa6d` (fix: Resolve merge conflict in food_data.json by keeping both dishes)
+- **main 머지 커밋**: `a72615f` (Merge pull request #7 from jha21vvv/feature/ahn-dish)
 
 ### 배운 점 (Learnings)
-- Git은 라인 단위로 변경사항을 비교하므로 인접한 라인을 동시에 수정할 때 충돌 마커를 생성함을 확인함.
-- 충돌 마커의 HEAD와 상대 브랜치 영역을 정확히 읽어 양쪽의 의도를 조화롭게 합치는 법을 배움.
+- Git은 라인 단위로 변경사항을 비교하므로 동일 객체나 인접한 필드를 동시에 수정할 때 충돌 마커를 생성함을 확인함.
+- 충돌 마커의 HEAD와 상대 브랜치 영역을 정확히 읽어 테스트용 수정 사항과 실제 반영할 기능을 분별하여 안전하게 병합하는 법을 배움.
 
 ---
 
