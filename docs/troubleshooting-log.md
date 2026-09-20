@@ -31,7 +31,19 @@ git reflog -2
 형태로 작성자 정보를 지정한다.
 
 ### 결과
-실행 후 전후 해시와 검증 결과를 별도 증빙 커밋으로 기록한다.
+- 수정 전: `e940da0698a0d9ec1052e9588198b7918da53788` — `docs: Ad amend practice log`
+- 수정 후: [`075d0626d03afb45dfd2f8491cc385514780f8d8`](https://github.com/jha21vvv/codyssey-b2-02/commit/075d0626d03afb45dfd2f8491cc385514780f8d8) — `docs: Add amend practice log`
+- 전후 tree 해시는 모두 `33506569b4b7795d9df0292c08080af84dce08e5`로 같아 파일 내용이 보존되었음을 확인했다.
+- `git diff e940da0 075d062` 출력이 없음을 확인했다.
+- 실제 `git reflog -2` 출력:
+
+```text
+075d062 HEAD@{0}: commit (amend): docs: Add amend practice log
+e940da0 HEAD@{1}: commit: docs: Ad amend practice log
+```
+
+- 수정 전 커밋은 push하지 않았으며, reflog는 로컬 기록이므로 위 출력을 문서에 보존한다.
+- 이 결과 기록은 amend 완료 후 별도 커밋으로 추가한다.
 
 ### 왜 이 방법을 선택했는가 (Why)
 - 새 커밋을 추가하는 것만으로 기존 메시지가 수정되지는 않으므로 amend로 직전 커밋을 대체한다.
