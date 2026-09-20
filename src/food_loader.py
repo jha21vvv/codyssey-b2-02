@@ -1,8 +1,15 @@
-"""한국 음식 JSON 로더 및 토너먼트용 비복원 무작위 샘플러."""
+﻿"""한국 음식 JSON 로더 및 토너먼트용 비복원 무작위 샘플러."""
 
 import json
 from pathlib import Path
 import random
+import sys
+
+if sys.stdout.encoding != "utf-8":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
 
 DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "food_data.json"
