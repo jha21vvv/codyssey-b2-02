@@ -83,7 +83,8 @@ Automatic merge failed; fix conflicts and then commit the result.
 
 ### 결과 (Outcome)
 - 비자명 충돌 상황에서 코드 유실 없이 파일명 변경과 로직 개선이 모두 반영된 단일 통합 모듈 완성.
-- 관련 PR: PR #3, PR #4 / 머지 커밋: (실제 머지 시 기록)
+- 관련 브랜치: eature/kim-rename-tiebreaker (Rename) & eature/ahn-modify-lottery (Modify)
+- 충돌 해결 머지 커밋: 6a9cfd6 (fix: Resolve rename/modify conflict by migrating lottery to tie_breaker.py)
 
 ### 배운 점 (Learnings)
 - 파일 이름 변경은 대규모 충돌을 유발할 수 있으므로 사전에 팀원들에게 리네이밍 계획을 공유하고, 변경 커밋과 리네임 커밋을 분리해야 함을 배움.
