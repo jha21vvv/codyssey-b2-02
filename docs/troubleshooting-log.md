@@ -8,31 +8,34 @@
 ## 시나리오 1: `git commit --amend` (최근 커밋 메시지 수정)
 
 ### 참여자
-- 작성 및 실습: **강동하**
+- 담당: **강동하 (Deviskido)** — 사용자 요청에 따라 Codex가 명령 실행 및 기록
+- 실습일: 2026-09-20
+- 브랜치: `feature/kang-amend-practice`
 
 ### 상황
-- 로컬에서 기능 개발 후 커밋을 작성했으나, 커밋 메시지에 오타(`Ad` -> `Add`)가 발생하고 변경 파일 1개가 누락되었음을 원격 push 직전에 발견함.
-- 불필요하게 `fix typo` 같은 무의미한 커밋을 히스토리에 남기지 않고 직전 커밋을 깔끔하게 바로잡아야 하는 상황.
+- 메시지 수정 실습을 위해 문서 변경을 오타가 있는 `docs: Ad amend practice log`로 커밋한다.
+- push 전에 `Ad`를 `Add`로 수정한다. 기존 예시를 실제 수행 기록으로 교체하며, 파일 누락 실습은 포함하지 않는다.
 
 ### 시도한 명령/절차
 ```bash
-# 1. 오타가 있는 커밋 생성
-git commit -m "feat: Ad string utility functions"
-
-# 2. 누락된 파일 스테이징 및 커밋 메시지 수정
-git add src/utils/string_utils.py
-git commit --amend -m "feat: Add string utility functions with unit tests"
-
-# 3. 변경 결과 확인
-git log -1 --stat
+git add docs/troubleshooting-log.md
+git commit -m "docs: Ad amend practice log"
+git log -1 --format='%H %T %s'
+git commit --amend -m "docs: Add amend practice log"
+git log -1 --format='%H %T %s'
+git reflog -2
 ```
 
+작성자 설정이 없는 환경이므로 실제 commit 명령에는
+`git -c user.name=Deviskido -c user.email=314834139+Deviskido@users.noreply.github.com`
+형태로 작성자 정보를 지정한다.
+
 ### 결과
-- 직전 커밋 해시가 갱신되면서 메시지 오타가 수정되고 누락되었던 파일이 단일 커밋으로 깔끔하게 통합됨.
-- 주의할 점: 이미 원격 저장소(`origin`)에 push된 커밋에 대해 `amend`를 수행하면 강제 푸시(`--force`)가 필요해 다른 팀원의 로컬 저장소와 충돌을 일으키므로, 반드시 **원격 푸시 전 로컬 커밋에만 사용**해야 함.
+실행 후 전후 해시와 검증 결과를 별도 증빙 커밋으로 기록한다.
 
 ### 왜 이 방법을 선택했는가 (Why)
-- 새로운 커밋을 추가하는 대신 직전 커밋 객체를 대체하여 Git 히스토리를 군더더기 없이 깨끗하게(Clean Git Graph) 유지할 수 있는 가장 표준적이고 안전한 방법이기 때문임.
+- 새 커밋을 추가하는 것만으로 기존 메시지가 수정되지는 않으므로 amend로 직전 커밋을 대체한다.
+- 최초 push 전에 실습하여 공유 이력을 재작성하지 않고 일반 push로 결과를 공유한다.
 
 ---
 
