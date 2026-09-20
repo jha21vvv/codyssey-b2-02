@@ -39,7 +39,9 @@
 
 ### 결과 (Outcome)
 - 양쪽 브랜치의 음식 데이터가 유실 없이 병합되어 128선 DB가 정상 동작함.
-- 관련 PR: PR #1, PR #2 / 머지 커밋: (실제 머지 시 기록)
+- 관련 PR: [PR #7: feat: Add Sundubu-jjigae to food data](https://github.com/jha21vvv/codyssey-b2-02/pull/7)
+- 충돌 해결 커밋: fafaa6d (fix: Resolve merge conflict in food_data.json by keeping both dishes)
+- main 머지 커밋: a72615f (Merge pull request #7 from jha21vvv/feature/ahn-dish)
 
 ### 배운 점 (Learnings)
 - Git은 라인 단위로 변경사항을 비교하므로 인접한 라인을 동시에 수정할 때 충돌 마커를 생성함을 확인함.
